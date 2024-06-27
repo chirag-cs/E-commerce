@@ -1,0 +1,44 @@
+.product-list {
+    padding: 20px;
+  }
+  
+  .product-item {
+    display: flex;
+    flex-direction: column;
+    border: 1px solid #ccc;
+    padding: 10px;
+    margin-bottom: 10px;
+  }
+  
+  .product-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  
+  .discount-input {
+    display: flex;
+    align-items: center;
+    margin-top: 10px;
+  }
+  
+  .discount-input input {
+    width: 60px;
+    margin-right: 10px;
+  }
+  
+  .variants {
+    margin-top: 10px;
+  }
+  
+  .variant-item {
+    display: flex;
+    align-items: center;
+    margin-top: 5px;
+  }
+  
+  .variant-item input {
+    width: 60px;
+    margin-right: 10px;
+  }
+  
