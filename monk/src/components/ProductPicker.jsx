@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import '../styles/ProductPicker.css';
+import { Box, Grid, TextField, Button, Checkbox, Typography } from '@mui/material';
+import '../styles/ProductList.css';
 
 const ProductPicker = ({ onClose, initialSelection }) => {
   const [products, setProducts] = useState([]);
@@ -7,15 +8,24 @@ const ProductPicker = ({ onClose, initialSelection }) => {
   const [search, setSearch] = useState('');
   const [page, setPage] = useState(1);
   const [hasMore, setHasMore] = useState(true);
+  const apiKey = '72njgfa948d9aS7gs5';
 
   useEffect(() => {
     fetchProducts(search, 1);
   }, []);
 
   const fetchProducts = async (search, page) => {
-    const url = `http://stageapi.monkcommerce.app/task/products/search?search=${search}&page=${page}&limit=10`;
+    const url = `/task/products/search?search=${search}&page=${page}&limit=10`;
     try {
-      const response = await fetch(url);
+      const response = await fetch(url, {
+        headers: {
+          'x-api-key': apiKey
+        }
+      });
+      if (response.status === 401) {
+        console.error('Unauthorized: Invalid API key');
+        return;
+      }
       const data = await response.json();
       if (data.length < 10) {
         setHasMore(false);
@@ -53,42 +63,52 @@ const ProductPicker = ({ onClose, initialSelection }) => {
   };
 
   return (
-    <div className="product-picker" onScroll={handleScroll}>
+    <Box className="product-picker" onScroll={handleScroll} sx={{ overflow: 'auto', maxHeight: '80vh', p: 2 }}>
       <form onSubmit={handleSearchSubmit}>
-        <input
-          type="text"
-          placeholder="Search products"
+        <TextField
+          label="Search products"
           value={search}
           onChange={handleSearchChange}
+          fullWidth
+          variant="outlined"
+          margin="normal"
         />
-        <button type="submit">Search</button>
+        <Button type="submit" variant="contained" color="primary" fullWidth>
+          Search
+        </Button>
       </form>
-      {products.map((product) => (
-        <div key={product.id}>
-          <input
-            type="checkbox"
-            checked={selectedProducts.some((p) => p.id === product.id)}
-            onChange={() => handleSelectProduct(product)}
-          />
-          <span>{product.name}</span>
-          <div className="variant-list">
-            {product.variants.map((variant) => (
-              <div key={variant.id} className="variant-item">
-                <input
-                  type="checkbox"
-                  checked={selectedProducts.some((p) => p.id === variant.id)}
-                  onChange={() => handleSelectProduct(variant)}
-                />
-                <span>{variant.name}</span>
-                <span>${variant.price}</span>
-                <span>{variant.available} available</span>
-              </div>
-            ))}
-          </div>
-        </div>
-      ))}
-      <button onClick={() => onClose(selectedProducts)}>Add</button>
-    </div>
+      <Grid container spacing={2} sx={{ mt: 2 }}>
+        {products.map((product) => (
+          <Grid item xs={12} key={product.id}>
+            <Box display="flex" alignItems="center">
+              <Checkbox
+                checked={selectedProducts.some((p) => p.id === product.id)}
+                onChange={() => handleSelectProduct(product)}
+              />
+              <Typography variant="body1">{product.name}</Typography>
+            </Box>
+            <Grid container spacing={1} sx={{ pl: 4 }}>
+              {product.variants.map((variant) => (
+                <Grid item xs={12} key={variant.id}>
+                  <Box display="flex" alignItems="center" justifyContent="space-between">
+                    <Checkbox
+                      checked={selectedProducts.some((p) => p.id === variant.id)}
+                      onChange={() => handleSelectProduct(variant)}
+                    />
+                    <Typography variant="body2">{variant.name}</Typography>
+                    <Typography variant="body2">${variant.price}</Typography>
+                    <Typography variant="body2">{variant.available} available</Typography>
+                  </Box>
+                </Grid>
+              ))}
+            </Grid>
+          </Grid>
+        ))}
+      </Grid>
+      <Button onClick={() => onClose(selectedProducts)} variant="contained" color="secondary" fullWidth sx={{ mt: 2 }}>
+        Add
+      </Button>
+    </Box>
   );
 };
 

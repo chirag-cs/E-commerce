@@ -3,6 +3,7 @@
   "private": true,
   "version": "0.0.0",
   "type": "module",
+  "proxy": "http://stageapi.monkcommerce.app",
   "scripts": {
     "dev": "vite",
     "build": "vite build",
@@ -10,6 +11,10 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@emotion/react": "^11.11.4",
+    "@emotion/styled": "^11.11.5",
+    "@mui/icons-material": "^5.15.20",
+    "@mui/material": "^5.15.20",
     "react": "^18.3.1",
     "react-dom": "^18.3.1"
   },

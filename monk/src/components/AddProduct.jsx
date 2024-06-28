@@ -1,4 +1,5 @@
 import React from 'react';
+import { Button } from '@mui/material';
 import '../styles/AddProduct.css';
 
 const AddProduct = ({ onAddProduct }) => {
@@ -13,11 +14,9 @@ const AddProduct = ({ onAddProduct }) => {
   };
 
   return (
-    <>
-      <button className="add-product-btn" onClick={handleClick}>
-        Add Product
-      </button>
-    </>
+    <Button className="add-product-btn" onClick={handleClick} variant="contained" color="primary">
+      Add Product
+    </Button>
   );
 };
 

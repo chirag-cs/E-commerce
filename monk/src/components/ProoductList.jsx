@@ -1,84 +1,68 @@
 import React, { useState } from 'react';
-import ProductPicker from './ProductPicker.jsx';
+import { Box, Grid, Button, IconButton } from '@mui/material';
+import { Delete as DeleteIcon, Edit as EditIcon } from '@mui/icons-material';
+import ProductPicker from './ProductPicker';
+import AddProduct from './AddProduct';
 import '../styles/ProductList.css';
 
-const ProductList = ({ products, setProducts }) => {
-  const [showPicker, setShowPicker] = useState(false);
-  const [pickerIndex, setPickerIndex] = useState(null);
+const ProductList = () => {
+  const [products, setProducts] = useState([]);
+  const [isPickerOpen, setPickerOpen] = useState(false);
+  const [editIndex, setEditIndex] = useState(null);
 
-  const handleEditProduct = (index) => {
-    setPickerIndex(index);
-    setShowPicker(true);
-  };
-
-  const handlePickerClose = (selectedProducts) => {
-    setShowPicker(false);
-    if (pickerIndex !== null) {
-      const updatedProducts = [
-        ...products.slice(0, pickerIndex),
-        ...selectedProducts,
-        ...products.slice(pickerIndex + 1),
-      ];
-      setProducts(updatedProducts);
-    }
-  };
-
-  const handleAddDiscount = (index, discount) => {
-    const updatedProducts = [...products];
-    updatedProducts[index] = { ...updatedProducts[index], discount };
-    setProducts(updatedProducts);
+  const handleAddProduct = (newProducts) => {
+    setProducts((prevProducts) => [
+      ...prevProducts.slice(0, editIndex),
+      ...newProducts,
+      ...prevProducts.slice(editIndex + 1),
+    ]);
+    setPickerOpen(false);
   };
 
   const handleRemoveProduct = (index) => {
-    const updatedProducts = [...products];
-    updatedProducts.splice(index, 1);
-    setProducts(updatedProducts);
+    setProducts((prevProducts) => prevProducts.filter((_, i) => i !== index));
   };
 
-  const handleAddVariantDiscount = (productIndex, variantIndex, discount) => {
-    const updatedProducts = [...products];
-    const updatedVariants = [...updatedProducts[productIndex].variants];
-    updatedVariants[variantIndex] = { ...updatedVariants[variantIndex], discount };
-    updatedProducts[productIndex] = { ...updatedProducts[productIndex], variants: updatedVariants };
-    setProducts(updatedProducts);
+  const handleEditProduct = (index) => {
+    setEditIndex(index);
+    setPickerOpen(true);
   };
 
   return (
-    <div className="product-list">
-      {products.map((product, index) => (
-        <div key={index} className="product-item">
-          <div className="product-header">
-            <span>{product.name}</span>
-            <button onClick={() => handleEditProduct(index)}>Edit</button>
-            <button onClick={() => handleRemoveProduct(index)}>x</button>
-          </div>
-          {product.variants.length > 1 && (
-            <button onClick={() => setShowVariants(!showVariants)}>Show variants</button>
-          )}
-          {product.variants.map((variant, variantIndex) => (
-            <div key={variant.id} className="variant-item">
-              <span>{variant.name}</span>
-              <span>${variant.price}</span>
-              <span>{variant.available} available</span>
-              <input
-                type="number"
-                value={variant.discount || ''}
-                onChange={(e) =>
-                  handleAddVariantDiscount(index, variantIndex, e.target.value)
-                }
-                placeholder="Discount"
-              />
-            </div>
-          ))}
-        </div>
-      ))}
-      {showPicker && (
-        <ProductPicker
-          onClose={handlePickerClose}
-          initialSelection={products[pickerIndex] ? [products[pickerIndex]] : []}
-        />
-      )}
-    </div>
+    <Box sx={{ p: 2 }}>
+      <Grid container spacing={2} sx={{color: 'black'}}>
+        <Grid item xs={12}>
+          <Item>Add Products</Item>
+        </Grid>
+        <Grid item xs={6}>
+          <Item>Products</Item>
+        </Grid>
+        <Grid item xs={6}>
+          <Item>Discount</Item>
+        </Grid>
+      </Grid>
+      <Grid container spacing={2}>
+        {products.map((product, index) => (
+          <Grid item xs={12} key={index}>
+            <Box display="flex" alignItems="center" justifyContent="space-between">
+              <span>{product.name}</span>
+              <Box>
+                <IconButton onClick={() => handleEditProduct(index)}>
+                  <EditIcon />
+                </IconButton>
+                {products.length > 1 && (
+                  <IconButton onClick={() => handleRemoveProduct(index)}>
+                    <DeleteIcon />
+                  </IconButton>
+                )}
+              </Box>
+            </Box>
+          </Grid>
+        ))}
+      </Grid>
+      <AddProduct onAddProduct={setProducts} />
+      {isPickerOpen && <ProductPicker onClose={handleAddProduct} />}
+    </Box>
   );
 };
 

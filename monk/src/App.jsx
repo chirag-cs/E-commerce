@@ -14,7 +14,7 @@ function App() {
   return (
     <div className="App">
       <ProductList products={products} setProducts={setProducts} />
-      <AddProduct onAddProduct={handleAddProduct} />
+      {/* <AddProduct onAddProduct={handleAddProduct} /> */}
     </div>
   );
 }
